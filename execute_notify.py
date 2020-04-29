@@ -10,13 +10,13 @@ import subprocess
 import datetime
 
 config = {
-	"slack_webhook_link": "link here"
+	"slack_webhook_link": "https://hooks.slack.com/services/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"
 }
 
 def generate_slack_message_command(input_command, cmd_name="None"):
 	message = f"Command `{input_command}` with name `{cmd_name}` finished at {str(datetime.datetime.now())}"
 	slack_webhook_link = config["slack_webhook_link"]
-	send_slack_command = """python3 -c 'import datetime;import json;import requests; requests.post("%s", headers={"Content-type": "application/json"}, data=json.dumps({"text": "%s"}))'""" % (slack_webhook_link, message)
+	send_slack_command = """python3 -c 'import datetime;import json;import requests; input_command="%s"; cmd_name="%s"; requests.post("%s", headers={"Content-type": "application/json"}, data=json.dumps({"text": f"Command `{input_command}` with name `{cmd_name}` finished at {str(datetime.datetime.now())}"}))'""" % (input_command, cmd_name, slack_webhook_link)
 	return send_slack_command
 
 def run_command_preserve_output(command, cmd_name="None"):
@@ -28,10 +28,13 @@ def run_command_preserve_output(command, cmd_name="None"):
 
 
 def generate_bashscript():
+	"""
+	Generate a bash script of your command, followed by a notification.
+	"""
 	pass
 
 def submit_to_cluster():
 	pass
 
 
-run_command_preserve_output("sleep 5")
+print(generate_slack_message_command("sleep 2", "Sams job"))
