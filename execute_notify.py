@@ -21,7 +21,7 @@ def generate_slack_message_command(input_command, cmd_name="None"):
     cmd_name = urllib.parse.quote_plus(cmd_name.replace(" ", "_"))
 
     slack_webhook_link = config["slack_webhook_link"]
-    send_slack_command = """python3 -c 'import datetime;import json;import requests; input_command="%s"; cmd_name="%s"; requests.post("%s", headers={"Content-type": "application/json"}, data=json.dumps({"text": f"Command `{input_command}` with name `{cmd_name}` finished at {str(datetime.datetime.now())}"}))'""" % (
+    send_slack_command = """/usr/bin/env python3 -c 'import datetime;import json;import requests; input_command="%s"; cmd_name="%s"; requests.post("%s", headers={"Content-type": "application/json"}, data=json.dumps({"text": f"Command `{input_command}` with name `{cmd_name}` finished at {str(datetime.datetime.now())}"}))'""" % (
         input_command, cmd_name, slack_webhook_link)
     return send_slack_command
 
