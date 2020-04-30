@@ -12,7 +12,7 @@ import urllib.parse
 
 
 config = {
-	"slack_webhook_link": "https://hooks.slack.com/services/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"
+	"slack_webhook_link": "slack link"
 }
 
 def generate_slack_message_command(input_command, cmd_name="None"):
@@ -32,14 +32,20 @@ def run_command_preserve_output(command, cmd_name="None"):
 	output, errors = r_val.communicate()
 
 
-def generate_bashscript():
+def generate_bashscript(command, cmd_name, bash_script_file):
 	"""
 	Generate a bash script of your command, followed by a notification.
 	"""
-	pass
+	with open(bash_script_file, "w") as fh:
+		fh.write(f"#!/bin/bash\n")
+		fh.write(f"{command}\n")
+		fh.write(generate_slack_message_command(command, cmd_name))
+		fh.write("\n\n")
+	r_val = subprocess.Popen(f"chmod +x {bash_script_file}", shell=True)
+	output, errors = r_val.communicate()
 
 def submit_to_cluster():
 	pass
 
 
-print(run_command_preserve_output("sleep 2", "Sam's job"))
+generate_bashscript("ls -thor", "My HPC Job",  "here.sh")
