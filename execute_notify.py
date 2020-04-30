@@ -25,8 +25,12 @@ def generate_slack_message_command(input_command, cmd_name="None"):
 	return send_slack_command
 
 def run_command_preserve_output(command, cmd_name="None"):
-	r_val = subprocess.Popen(command, shell=True)
-	output, errors = r_val.communicate()
+	try:
+		r_val = subprocess.Popen(command, shell=True)
+		output, errors = r_val.communicate()
+	except KeyboardInterrupt:
+		pass
+		
 	slack_send = generate_slack_message_command(command, cmd_name)
 	r_val = subprocess.Popen(slack_send, shell=True)
 	output, errors = r_val.communicate()
