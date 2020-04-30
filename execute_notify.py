@@ -53,7 +53,8 @@ def generate_bashscript(command, cmd_name, bash_script_file):
 
 def submit_to_cluster(command, cmd_name, job_name,
                       qsub_options="-q all.q"):
-    generate_bashscript(command, cmd_name, job_name+".sh")
+    bash_script_file = job_name+".sh"
+    generate_bashscript(command, cmd_name, bash_script_file)
     r_val = subprocess.Popen(
         f"qsub {qsub_options} {bash_script_file}",
         shell=True)
