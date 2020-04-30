@@ -44,8 +44,10 @@ def generate_bashscript(command, cmd_name, bash_script_file):
 	r_val = subprocess.Popen(f"chmod +x {bash_script_file}", shell=True)
 	output, errors = r_val.communicate()
 
-def submit_to_cluster():
-	pass
+def submit_to_cluster(command, cmd_name, bash_script_file, qsub_options="-q all.q"):
+	generate_bashscript(command, cmd_name, bash_script_file)
+	r_val = subprocess.Popen(f"qsub {qsub_options} {bash_script_file}", shell=True)
+	output, errors = r_val.communicate()
 
 
-generate_bashscript("ls -thor", "My HPC Job",  "here.sh")
+submit_to_cluster("ls -thor", "My HPC Job",  "here.sh")
