@@ -60,4 +60,32 @@ def submit_to_cluster(command, cmd_name, bash_script_file,
     output, errors = r_val.communicate()
 
 
-run_command_preserve_output("sleep 10", "My HPC Job")
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("command", type=str, help="Command to run and be notified about")
+    parser.add_argument("--name", "-n", type=str, help="Name to label command with")
+    parser.add_argument("--script", "-s", type=str, help="Save executible script instead of running interactively. Requires filename for script.")
+    parser.add_argument("--blt", "-b", type=str, help="Submit immediately to BLT cluster. Requires job name")
+    parser.add_argument("--qopts", "-q", type=str, help="SGE Queue options. Will be passed to qsub. Example: -q gpu.q")
+    args = parser.parse_args()
+
+    name = args.name if args.name else "None"
+
+    if not args.script and not args.blt:
+        run_command_preserve_output(args.command, name)
+
+    if args.script and args.blt:
+        print("Cannot both save bash script and submit to BLT")
+        exit(1)
+
+    if args.script:
+        generate_bashscript(args.command, name, args.script)
+
+    if args.blt:
+        qopts = args.qopts if args.qopts else "-q all.q"
+        submit_to_cluster(args.command, name, args.blt, qopts)
+
+
+
+
