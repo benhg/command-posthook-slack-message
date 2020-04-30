@@ -67,7 +67,7 @@ if __name__ == '__main__':
     parser.add_argument("--name", "-n", type=str, help="Name to label command with")
     parser.add_argument("--script", "-s", type=str, help="Save executible script instead of running interactively. Requires filename for script.")
     parser.add_argument("--blt", "-b", type=str, help="Submit immediately to BLT cluster. Requires job name")
-    parser.add_argument("--qopts", "-q", type=str, help="SGE Queue options. Will be passed to qsub. Example: -q gpu.q")
+    parser.add_argument("--qopts", "-q", type=str, help="SGE Queue to submit to. Will be passed to qsub. Example: gpu.q")
     args = parser.parse_args()
 
     name = args.name if args.name else "None"
@@ -83,9 +83,8 @@ if __name__ == '__main__':
         generate_bashscript(args.command, name, args.script)
 
     if args.blt:
-        qopts = args.qopts if args.qopts else "-q all.q"
+        qopts = "-q "+args.qopts if args.qopts else "-q all.q"
         submit_to_cluster(args.command, name, args.blt, qopts)
-
 
 
 
