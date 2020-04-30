@@ -8,13 +8,17 @@ Execute a command and get a slack notification when it's done
 
 import subprocess
 import datetime
+import urllib.parse
+
 
 config = {
-	"slack_webhook_link": "https://hooks.slack.com/services/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"
+	"slack_webhook_link": "https://hooks.slack.com/services/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"
 }
 
 def generate_slack_message_command(input_command, cmd_name="None"):
-	message = f"Command `{input_command}` with name `{cmd_name}` finished at {str(datetime.datetime.now())}"
+	input_command = urllib.parse.quote_plus(input_command)
+	cmd_name = urllib.parse.quote_plus(cmd_name)
+
 	slack_webhook_link = config["slack_webhook_link"]
 	send_slack_command = """python3 -c 'import datetime;import json;import requests; input_command="%s"; cmd_name="%s"; requests.post("%s", headers={"Content-type": "application/json"}, data=json.dumps({"text": f"Command `{input_command}` with name `{cmd_name}` finished at {str(datetime.datetime.now())}"}))'""" % (input_command, cmd_name, slack_webhook_link)
 	return send_slack_command
@@ -37,4 +41,4 @@ def submit_to_cluster():
 	pass
 
 
-print(generate_slack_message_command("sleep 2", "Sams job"))
+print(run_command_preserve_output("sleep 2", "Sams job"))
