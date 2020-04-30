@@ -11,7 +11,7 @@ import urllib.parse
 
 
 config = {
-    "slack_webhook_link": ""
+    "slack_webhook_link": "https://hooks.slack.com/services/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"
 }
 
 
