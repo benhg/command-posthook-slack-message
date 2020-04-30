@@ -7,7 +7,6 @@ Execute a command and get a slack notification when it's done
 """
 
 import subprocess
-import datetime
 import urllib.parse
 
 
