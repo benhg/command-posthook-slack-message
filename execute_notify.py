@@ -11,7 +11,7 @@ import urllib.parse
 
 
 config = {
-    "slack_webhook_link": "https://hooks.slack.com/services/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"
+    "slack_webhook_link": "GLOBAL SLACK LINK"
 }
 
 
@@ -60,6 +60,13 @@ def submit_to_cluster(command, cmd_name, job_name,
         shell=True)
     output, errors = r_val.communicate()
 
+def configure():
+    slack_link = input("Please enter your slack webhook link")
+    config_template = {
+    "slack_webhook_link": slack_link}
+    with open(os.expand_user("~/.slack_cmd_notifier.json")) as fh:
+        fh.write(json.dumps(config_template))
+
 
 if __name__ == '__main__':
     import argparse
@@ -75,6 +82,9 @@ if __name__ == '__main__':
     name = args.name if args.name else "None"
 
     if args.config:
+        configure()
+        print("Thanks for configuring. On your next run of this progam, it will attempt to use your local configuration file")
+        exit(1)
 
     if not args.script and not args.blt:
         run_command_preserve_output(args.command, name)
