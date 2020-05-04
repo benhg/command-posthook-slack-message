@@ -16,46 +16,54 @@ config = {
 }
 
 
-def generate_slack_message_command(input_command, cmd_name="None"):
+def generate_slack_message_command(input_command, cmd_name="None", globalness=False):
 
     input_command = urllib.parse.quote_plus(input_command.replace(" ", "_"))
     cmd_name = urllib.parse.quote_plus(cmd_name.replace(" ", "_"))
+    slack_link = 0
+    try:
+        with open("~/.slack_cmd_notifier.json") as fh:
+            slack_link = json.read(fh)["slack_webhook_link"]
+        print("Found personal slack link")
+    except FileNotFoundError as e:
+        slack_webhook_link = config["slack_webhook_link"]
+        print("No local slack link found. Going with global.")
 
-    slack_webhook_link = config["slack_webhook_link"]
+
     send_slack_command = """/usr/bin/env python3 -c 'import datetime;import json;import requests; input_command="%s"; cmd_name="%s"; requests.post("%s", headers={"Content-type": "application/json"}, data=json.dumps({"text": f"Command `{input_command}` with name `{cmd_name}` finished at {str(datetime.datetime.now())}"}))'""" % (
         input_command, cmd_name, slack_webhook_link)
     return send_slack_command
 
 
-def run_command_preserve_output(command, cmd_name="None"):
+def run_command_preserve_output(command, cmd_name="None", globalness=False):
     try:
         r_val = subprocess.Popen(command, shell=True)
         output, errors = r_val.communicate()
     except KeyboardInterrupt:
         pass
 
-    slack_send = generate_slack_message_command(command, cmd_name)
+    slack_send = generate_slack_message_command(command, cmd_name, globalness=globalness)
     r_val = subprocess.Popen(slack_send, shell=True)
     output, errors = r_val.communicate()
 
 
-def generate_bashscript(command, cmd_name, bash_script_file):
+def generate_bashscript(command, cmd_name, bash_script_file, globalness=False):
     """
     Generate a bash script of your command, followed by a notification.
     """
     with open(bash_script_file, "w") as fh:
         fh.write(f"#!/bin/bash\n")
         fh.write(f"{command}\n")
-        fh.write(generate_slack_message_command(command, cmd_name))
+        fh.write(generate_slack_message_command(command, cmd_name, globalness=globalness))
         fh.write("\n\n")
     r_val = subprocess.Popen(f"chmod +x {bash_script_file}", shell=True)
     output, errors = r_val.communicate()
 
 
 def submit_to_cluster(command, cmd_name, job_name,
-                      qsub_options="-q all.q"):
+                      qsub_options="-q all.q", globalness=False):
     bash_script_file = job_name+".sh"
-    generate_bashscript(command, cmd_name, bash_script_file)
+    generate_bashscript(command, cmd_name, bash_script_file, globalness=globalness)
     r_val = subprocess.Popen(
         f"qsub {qsub_options} {bash_script_file}",
         shell=True)
@@ -78,7 +86,7 @@ if __name__ == '__main__':
     parser.add_argument("--blt", "-b", type=str, help="Submit immediately to BLT cluster. Requires job name")
     parser.add_argument("--qopts", "-q", type=str, help="SGE Queue to submit to. Will be passed to qsub. Example: gpu.q")
     parser.add_argument("--config", "-c", action="store_true", help="Configure this app. Will start an interactive configuration process")
-    parser.add_argument("--global", "-c", action="store_true", help="Ignore any local configs and send to global channel")
+    parser.add_argument("--globality", "-g", action="store_true", help="Ignore any local configs and send to global channel")
     args = parser.parse_args()
 
     name = args.name if args.name else "None"
@@ -89,18 +97,18 @@ if __name__ == '__main__':
         exit(1)
 
     if not args.script and not args.blt:
-        run_command_preserve_output(args.command, name)
+        run_command_preserve_output(args.command, name, globalness=args.globality)
 
     if args.script and args.blt:
         print("Cannot both save bash script and submit to BLT")
         exit(1)
 
     if args.script:
-        generate_bashscript(args.command, name, args.script)
+        generate_bashscript(args.command, name, args.script, globalness=args.globality)
 
     if args.blt:
         qopts = "-q "+args.qopts if args.qopts else "-q all.q"
-        submit_to_cluster(args.command, name, args.blt, qopts)
+        submit_to_cluster(args.command, name, args.blt, qopts, globalness=args.globality)
 
 
 
