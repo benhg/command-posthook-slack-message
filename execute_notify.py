@@ -23,7 +23,7 @@ def generate_slack_message_command(input_command, cmd_name="None", globalness=Fa
     slack_link = 0
     try:
         with open(os.path.expanduser("~/.slack_cmd_notifier.json")) as fh:
-            slack_link = json.read(fh)["slack_webhook_link"]
+            slack_link = json.load(fh)["slack_webhook_link"]
         print("Found personal slack link")
     except FileNotFoundError as e:
         slack_webhook_link = config["slack_webhook_link"]
