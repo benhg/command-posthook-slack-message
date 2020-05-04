@@ -69,9 +69,12 @@ if __name__ == '__main__':
     parser.add_argument("--script", "-s", type=str, help="Save executible script instead of running interactively. Requires filename for script.")
     parser.add_argument("--blt", "-b", type=str, help="Submit immediately to BLT cluster. Requires job name")
     parser.add_argument("--qopts", "-q", type=str, help="SGE Queue to submit to. Will be passed to qsub. Example: gpu.q")
+    parser.add_argument("--config", "-c", action="store_true", help="Configure this app. Will start an interactive configuration process")
     args = parser.parse_args()
 
     name = args.name if args.name else "None"
+
+    if args.config:
 
     if not args.script and not args.blt:
         run_command_preserve_output(args.command, name)
