@@ -8,7 +8,7 @@ Execute a command and get a slack notification when it's done
 
 import subprocess
 import urllib.parse
-
+import os
 
 config = {
     "slack_webhook_link": "GLOBAL SLACK LINK"
@@ -61,10 +61,10 @@ def submit_to_cluster(command, cmd_name, job_name,
     output, errors = r_val.communicate()
 
 def configure():
-    slack_link = input("Please enter your slack webhook link")
+    slack_link = input("Please enter your slack webhook link\n")
     config_template = {
     "slack_webhook_link": slack_link}
-    with open(os.expand_user("~/.slack_cmd_notifier.json")) as fh:
+    with open(os.path.expanduser("~/.slack_cmd_notifier.json", "w")) as fh:
         fh.write(json.dumps(config_template))
 
 
