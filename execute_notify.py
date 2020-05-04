@@ -20,15 +20,12 @@ def generate_slack_message_command(input_command, cmd_name="None", globalness=Fa
 
     input_command = urllib.parse.quote_plus(input_command.replace(" ", "_"))
     cmd_name = urllib.parse.quote_plus(cmd_name.replace(" ", "_"))
-    slack_link = 0
+    slack_webhook_link = 0
     try:
         with open(os.path.expanduser("~/.slack_cmd_notifier.json")) as fh:
-            slack_link = json.load(fh)["slack_webhook_link"]
-        print("Found personal slack link")
+            slack_webhook_link = json.load(fh)["slack_webhook_link"]
     except FileNotFoundError as e:
         slack_webhook_link = config["slack_webhook_link"]
-        print("No local slack link found. Going with global.")
-
 
     send_slack_command = """/usr/bin/env python3 -c 'import datetime;import json;import requests; input_command="%s"; cmd_name="%s"; requests.post("%s", headers={"Content-type": "application/json"}, data=json.dumps({"text": f"Command `{input_command}` with name `{cmd_name}` finished at {str(datetime.datetime.now())}"}))'""" % (
         input_command, cmd_name, slack_webhook_link)
