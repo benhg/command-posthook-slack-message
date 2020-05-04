@@ -22,6 +22,8 @@ def generate_slack_message_command(input_command, cmd_name="None", globalness=Fa
     cmd_name = urllib.parse.quote_plus(cmd_name.replace(" ", "_"))
     slack_webhook_link = 0
     try:
+        if globalness:
+            raise FileNotFoundError
         with open(os.path.expanduser("~/.slack_cmd_notifier.json")) as fh:
             slack_webhook_link = json.load(fh)["slack_webhook_link"]
     except FileNotFoundError as e:
