@@ -78,6 +78,7 @@ if __name__ == '__main__':
     parser.add_argument("--blt", "-b", type=str, help="Submit immediately to BLT cluster. Requires job name")
     parser.add_argument("--qopts", "-q", type=str, help="SGE Queue to submit to. Will be passed to qsub. Example: gpu.q")
     parser.add_argument("--config", "-c", action="store_true", help="Configure this app. Will start an interactive configuration process")
+    parser.add_argument("--global", "-c", action="store_true", help="Ignore any local configs and send to global channel")
     args = parser.parse_args()
 
     name = args.name if args.name else "None"
