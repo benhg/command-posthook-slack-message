@@ -9,6 +9,7 @@ Execute a command and get a slack notification when it's done
 import subprocess
 import urllib.parse
 import os
+import json
 
 config = {
     "slack_webhook_link": "GLOBAL SLACK LINK"
@@ -64,7 +65,7 @@ def configure():
     slack_link = input("Please enter your slack webhook link\n")
     config_template = {
     "slack_webhook_link": slack_link}
-    with open(os.path.expanduser("~/.slack_cmd_notifier.json", "w")) as fh:
+    with open(os.path.expanduser("~/.slack_cmd_notifier.json"), "w") as fh:
         fh.write(json.dumps(config_template))
 
 
