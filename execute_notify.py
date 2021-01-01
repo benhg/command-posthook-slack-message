@@ -80,15 +80,13 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("command", type=str, help="Command to run and be notified about")
-    parser.add_argument("--name", "-n", type=str, help="Name to label command with")
+    parser.add_argument("--name", "-n", type=str, help="Name to label command with", default="None")
     parser.add_argument("--script", "-s", type=str, help="Save executible script instead of running interactively. Requires filename for script.")
     parser.add_argument("--blt", "-b", type=str, help="Submit immediately to BLT cluster. Requires job name")
     parser.add_argument("--qopts", "-q", type=str, help="SGE Queue to submit to. Will be passed to qsub. Example: gpu.q")
     parser.add_argument("--config", "-c", action="store_true", help="Configure this app. Will start an interactive configuration process")
     parser.add_argument("--globality", "-g", action="store_true", help="Ignore any local configs and send to global channel")
     args = parser.parse_args()
-
-    name = args.name if args.name else "None"
 
     if args.config:
         configure()
